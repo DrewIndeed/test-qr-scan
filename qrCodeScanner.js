@@ -31,15 +31,18 @@ qrcode.callback = (res) => {
 
 btnScanQR.onclick = () => {
     navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: 'environment' } })
+        .getUserMedia({ video: true })
         .then(function (stream) {
             scanning = true;
+
             qrResult.hidden = true;
             btnScanQR.hidden = true;
             canvasElement.hidden = false;
-            video.setAttribute('playsinline', true); // required to tell iOS safari we don't want fullscreen
+
+            // video.setAttribute('playsinline', true); // required to tell iOS safari we don't want fullscreen
             video.srcObject = stream;
             video.play();
+
             tick();
             scan();
         });
@@ -49,7 +52,6 @@ function tick() {
     canvasElement.height = video.videoHeight;
     canvasElement.width = video.videoWidth;
     canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-
     scanning && requestAnimationFrame(tick);
 }
 
