@@ -18,6 +18,7 @@ qrcode.callback = (res) => {
             track.stop();
         });
 
+        // show other elements rather than the video canvas
         qrResult.hidden = false;
         canvasElement.hidden = true;
         btnScanQR.hidden = false;
@@ -25,30 +26,43 @@ qrcode.callback = (res) => {
         // open response url (scanned url resulted from the QR code) in the current window
         // window.open(res,"_self")
 
+        // print out the resutlt url when scanned successfully
         console.log(res);
     }
 };
 
+/**
+ * Handle scan QR Code button click event
+*/
 btnScanQR.onclick = () => {
     navigator.mediaDevices
         .getUserMedia({ video: { facingMode: 'environment' } })
         .then(function (stream) {
             scanning = true;
 
+            // hide other elements rather than video canvas
             qrResult.hidden = true;
             btnScanQR.hidden = true;
             canvasElement.hidden = false;
 
-            video.setAttribute('playsinline', 'playsinline'); // required to tell iOS safari we don't want fullscreen
+            // IMPORTANT: required to tell iOS safari we don't want fullscreen a.k.a open the Boardcast Screen
+            video.setAttribute('playsinline', 'playsinline');
             video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+            
             video.srcObject = stream;
             video.play();
 
+            // draw the video canvas and start displaying the device's camera
             tick();
+
+            // start scanning for QR code
             scan();
         });
 };
 
+/**
+ * Method to draw canvas element for video display
+ */
 function tick() {
     canvasElement.height = video.videoHeight;
     canvasElement.width = video.videoWidth;
@@ -56,6 +70,9 @@ function tick() {
     scanning && requestAnimationFrame(tick);
 }
 
+/**
+ * Method to decode QR Code when detected by camera
+ */
 function scan() {
     try {
         qrcode.decode();
